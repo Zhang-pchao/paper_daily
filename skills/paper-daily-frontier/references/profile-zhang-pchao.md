@@ -56,5 +56,5 @@ Use total score (0-100):
 ## Output preference
 
 - Daily report language: English
-- Daily shortlist size: 5 papers (expand to 10 only when requested)
-- Include "Top 1-2 papers to deep-read today" with concrete reasons
+- Daily shortlist size: 1 paper (only the most relevant one)
+- Include a brief interpretation: background, method, and conclusion

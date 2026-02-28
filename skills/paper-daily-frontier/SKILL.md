@@ -13,7 +13,7 @@ Collect or confirm:
 - Topic focus
 - Time window (default: last 24h)
 - Source scope
-- Output size (default: 5-10 papers)
+- Output size (default: 1 paper)
 - Audience (researcher, engineer, leadership)
 
 If missing, infer defaults from `references/profile-zhang-pchao.md` and continue.
@@ -33,8 +33,12 @@ If missing, infer defaults from `references/profile-zhang-pchao.md` and continue
    - Why it matters
    - Caveats
 8. Produce the final digest using `references/report-template.md`.
-9. Append "Top 1-2 papers to deep-read today" with explicit reason.
-10. If requested, generate a machine-readable dataset (JSON/CSV).
+9. Keep only the single highest-ranked paper as "Paper of the Day".
+10. Add a brief interpretation section with:
+   - Research background (why this question matters)
+   - Method (how the paper studies the problem)
+   - Conclusion (main findings and implications)
+11. If requested, generate a machine-readable dataset (JSON/CSV).
 
 ## Command trigger
 
@@ -44,7 +48,7 @@ When user says **"今日推送"**, run:
 bash skills/paper-daily-frontier/scripts/today_push.sh
 ```
 
-Then return `reports/daily-report-YYYY-MM-DD.md` as the English daily digest output.
+Then return `reports/daily-report-YYYY-MM-DD.md` as the English daily digest output (single-paper mode by default).
 
 ## Quality bar
 
