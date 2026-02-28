@@ -212,6 +212,33 @@ def summarize(p: dict) -> str:
     return s[:757] + "..."
 
 
+def extract_resource_links(p: dict) -> list[str]:
+    text = f"{p.get('summary','')} {p.get('url','')}"
+    urls = re.findall(r"https?://[^\s)\]>]+", text)
+    cleaned = []
+    for u in urls:
+        u = u.rstrip('.,;')
+        if u not in cleaned:
+            cleaned.append(u)
+    useful = [u for u in cleaned if any(k in u.lower() for k in ["github.com", "gitlab", "bitbucket", "zenodo", "figshare", "dataset", "code"])]
+    return useful[:3]
+
+
+def notable_author_line(authors: list[str]) -> str:
+    notable = {
+        "Michele Parrinello": "Michele Parrinello is a leading figure in enhanced sampling and molecular simulation methods.",
+        "Giovanni Bussi": "Giovanni Bussi is well known for advanced sampling and statistical mechanics in molecular simulations.",
+        "Roberto Car": "Roberto Car is a pioneer of first-principles molecular dynamics.",
+    }
+    for a in authors:
+        for k, v in notable.items():
+            if k.lower() in a.lower():
+                return v
+    if authors:
+        return f"{authors[0]} is one of the key contributors of this work and worth tracking for follow-up papers."
+    return "No notable-author signal identified from metadata."
+
+
 def dedupe(papers: list[dict]) -> list[dict]:
     seen = set()
     out = []
@@ -245,23 +272,36 @@ def build_report(topic: str, papers: list[dict], date_str: str) -> str:
         return "\n".join(lines)
 
     p = papers[0]
+    authors = p.get("authors", [])
+    resources = extract_resource_links(p)
     lines += [
         "## 2) Paper of the Day",
         f"- Title: {p.get('title', '')}",
-        f"- Authors: {', '.join(p.get('authors', [])[:8]) or 'N/A'}",
-        f"- Source URL: {p.get('url', '')}",
-        f"- Venue / Status: {p.get('venue', p.get('source', 'N/A'))}",
-        f"- Published / Submitted: {p.get('published', 'N/A')}",
+        f"- Paper link: {p.get('url', '')}",
+        f"- Authors: {', '.join(authors[:8]) or 'N/A'}",
         f"- Method Match Score (0-100): {p.get('method_score', 0)}",
         f"- Chemistry Relevance Score (0-100): {p.get('chem_score', 0)}",
         f"- Brief summary: {summarize(p)}",
         "",
-        "## 3) Brief Interpretation",
+        "## 3) Author note",
+        f"- {notable_author_line(authors)}",
+        "",
+        "## 4) Code / resources",
+    ]
+    if resources:
+        for u in resources:
+            lines.append(f"- {u}")
+    else:
+        lines.append("- No explicit code/data link was detected from metadata. Check the paper page for supplementary links.")
+
+    lines += [
+        "",
+        "## 5) Brief Interpretation",
         "- Research background: This work targets a current bottleneck in molecular/interface chemistry and reaction-mechanism modeling.",
         "- Method: The study uses computational/theoretical modeling (or experiment+model metadata when available) to quantify mechanisms and trends.",
         "- Conclusion: The reported findings provide actionable signals for mechanism understanding and future simulation/validation work.",
         "",
-        "## 4) Why this one today",
+        "## 6) Why this one today",
         f"- Chosen as the single most relevant paper by weighted score ({p.get('total_score', 0)}) and profile alignment.",
     ]
     return "\n".join(lines)

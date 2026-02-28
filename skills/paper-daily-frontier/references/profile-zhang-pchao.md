@@ -58,3 +58,6 @@ Use total score (0-100):
 - Daily report language: English
 - Daily shortlist size: 1 paper (only the most relevant one)
 - Include a brief interpretation: background, method, and conclusion
+- Use only essential metadata: title + paper link (no issue/volume by default)
+- Add one-line notable-author context when possible
+- Add code/resource links when available

@@ -62,11 +62,11 @@ Enforce:
 
 - Write in English.
 - Prefer compact, high-information bullet points.
-- Keep each paper summary within 120-180 words unless asked otherwise.
-- Include two scores per paper:
-  - Method Match Score (0-100)
-  - Chemistry Relevance Score (0-100)
-- End with 3-5 trend observations across the selected papers.
+- Omit issue/volume metadata (journal bibliographic details) unless explicitly requested.
+- Keep one clean primary link to the paper.
+- Add one short "Notable author" line when a well-known author is present.
+- If code/data is available, add explicit resource links (GitHub/project/dataset).
+- Keep interpretation concise: background, method, conclusion.
 
 ## Reliability operations (optional)
 
