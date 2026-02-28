@@ -380,6 +380,17 @@ def _category_domain_guard(category: str, text: str) -> bool:
         if any(x in t for x in drop_any):
             return False
         return any(x in t for x in keep_any)
+
+    if category == "bubble-marangoni-electrolysis":
+        strong_terms = [
+            "bubble", "marangoni", "electrolysis", "hydrogen evolution", "her", "coalescence", "detachment", "three-phase"
+        ]
+        drop_any = ["meiotic", "recombination", "dna", "protein", "galaxy", "astroph"]
+        if any(x in t for x in drop_any):
+            return False
+        hits = sum(1 for x in strong_terms if x in t)
+        return hits >= 2
+
     return True
 
 
@@ -414,6 +425,7 @@ def main() -> None:
     parser.add_argument("--out-dir", default="reports")
     parser.add_argument("--category", default="all", help="Category id from pdf-library-zhang-pchao.json")
     parser.add_argument("--library", default="skills/paper-daily-frontier/references/pdf-library-zhang-pchao.json")
+    parser.add_argument("--min-score", type=int, default=22)
     parser.add_argument("--allow-repeat", action="store_true", help="Allow same-day repeats")
     args = parser.parse_args()
 
@@ -451,7 +463,7 @@ def main() -> None:
         if category_keywords and not any(k.lower() in text for k in category_keywords):
             continue
         total, method_score, chem_score = score_paper(p, DEFAULT_KEYWORDS, category_keywords)
-        if total < 22:
+        if total < args.min_score:
             continue
         p["total_score"] = total
         p["method_score"] = method_score
