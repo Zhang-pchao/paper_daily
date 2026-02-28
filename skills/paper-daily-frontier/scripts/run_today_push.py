@@ -194,7 +194,7 @@ def fetch_chemrxiv(days: int = 5, rows: int = 50) -> list[dict]:
     return entries
 
 
-def score_paper(p: dict, keywords: list[str]) -> tuple[int, int, int]:
+def score_paper(p: dict, keywords: list[str], category_keywords: list[str] | None = None) -> tuple[int, int, int]:
     text = (p.get("title", "") + " " + p.get("summary", "")).lower()
     method_kw = ["deep potential", "neural network potential", "machine learning potential", "enhanced sampling", "free energy", "neural ode", "wasserstein", "gradient flow", "nonlinear mobility"]
     chem_kw = ["proton transfer", "tautomerism", "hydronium", "hydroxide", "electrical double layer", "edl", "oxide-electrolyte", "marangoni", "bubble", "electrolysis", "hydrogen evolution", "interface", "electrolyte"]
@@ -229,6 +229,15 @@ def score_paper(p: dict, keywords: list[str]) -> tuple[int, int, int]:
 
     if not any(k in text for k in keywords):
         total = int(total * 0.6)
+
+    if category_keywords:
+        hit = sum(1 for k in category_keywords if k.lower() in text)
+        if hit >= 2:
+            total += 20
+        elif hit == 1:
+            total += 10
+        else:
+            total = int(total * 0.75)
 
     total = min(100, total)
     return total, method_score, chem_score
@@ -345,12 +354,26 @@ def build_report(topic: str, papers: list[dict], date_str: str) -> str:
     return "\n".join(lines)
 
 
-def _state_path(out_dir: Path, date_str: str) -> Path:
-    return out_dir / f"pushed-{date_str}.json"
+def _load_category_keywords(category: str, library_path: Path) -> list[str]:
+    if category in ("all", "auto", ""):
+        return []
+    try:
+        data = json.loads(library_path.read_text(encoding="utf-8"))
+        for c in data.get("categories", []):
+            if c.get("id") == category:
+                return [str(x) for x in c.get("keywords", [])]
+    except Exception:
+        return []
+    return []
 
 
-def _load_pushed_urls(out_dir: Path, date_str: str) -> set[str]:
-    p = _state_path(out_dir, date_str)
+def _state_path(out_dir: Path, date_str: str, category: str = "all") -> Path:
+    suffix = "" if category in ("all", "auto", "") else f"-{category}"
+    return out_dir / f"pushed-{date_str}{suffix}.json"
+
+
+def _load_pushed_urls(out_dir: Path, date_str: str, category: str = "all") -> set[str]:
+    p = _state_path(out_dir, date_str, category)
     if not p.exists():
         return set()
     try:
@@ -362,8 +385,8 @@ def _load_pushed_urls(out_dir: Path, date_str: str) -> set[str]:
     return set()
 
 
-def _save_pushed_urls(out_dir: Path, date_str: str, urls: set[str]) -> None:
-    p = _state_path(out_dir, date_str)
+def _save_pushed_urls(out_dir: Path, date_str: str, urls: set[str], category: str = "all") -> None:
+    p = _state_path(out_dir, date_str, category)
     p.write_text(json.dumps(sorted(urls), ensure_ascii=False, indent=2), encoding="utf-8")
 
 
@@ -373,11 +396,15 @@ def main() -> None:
     parser.add_argument("--top-k", type=int, default=1)
     parser.add_argument("--days", type=int, default=3)
     parser.add_argument("--out-dir", default="reports")
+    parser.add_argument("--category", default="all", help="Category id from pdf-library-zhang-pchao.json")
+    parser.add_argument("--library", default="skills/paper-daily-frontier/references/pdf-library-zhang-pchao.json")
     parser.add_argument("--allow-repeat", action="store_true", help="Allow same-day repeats")
     args = parser.parse_args()
 
     today = dt.datetime.utcnow().date()
     cutoff = today - dt.timedelta(days=args.days)
+
+    category_keywords = _load_category_keywords(args.category, Path(args.library))
 
     papers = []
     try:
@@ -402,7 +429,10 @@ def main() -> None:
             continue
         if d < cutoff:
             continue
-        total, method_score, chem_score = score_paper(p, DEFAULT_KEYWORDS)
+        text = (p.get("title", "") + " " + p.get("summary", "")).lower()
+        if category_keywords and not any(k.lower() in text for k in category_keywords):
+            continue
+        total, method_score, chem_score = score_paper(p, DEFAULT_KEYWORDS, category_keywords)
         if total < 22:
             continue
         p["total_score"] = total
@@ -416,13 +446,13 @@ def main() -> None:
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    pushed_urls = set() if args.allow_repeat else _load_pushed_urls(out_dir, date_str)
+    pushed_urls = set() if args.allow_repeat else _load_pushed_urls(out_dir, date_str, args.category)
     filtered = [p for p in ranked if (p.get("url") not in pushed_urls)]
     top = filtered[: args.top_k]
 
     if top and not args.allow_repeat:
         pushed_urls.update(p.get("url", "") for p in top if p.get("url"))
-        _save_pushed_urls(out_dir, date_str, pushed_urls)
+        _save_pushed_urls(out_dir, date_str, pushed_urls, args.category)
 
     report = build_report(args.topic, top, date_str)
 
@@ -434,6 +464,7 @@ def main() -> None:
 
     print(f"[OK] Report written: {md_path}")
     print(f"[OK] Data written:   {json_path}")
+    print(f"[OK] Category: {args.category}")
     print(f"[OK] Candidate pool: {len(papers)}")
     print(f"[OK] Already pushed today: {len(pushed_urls) - len(top) if (top and not args.allow_repeat) else len(pushed_urls)}")
     print(f"[OK] Selected papers: {len(top)}")

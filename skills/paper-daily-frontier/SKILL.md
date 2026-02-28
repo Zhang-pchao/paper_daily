@@ -49,7 +49,13 @@ When user says **"今日推送"** or **"再来一篇"**, run:
 bash skills/paper-daily-frontier/scripts/today_push.sh
 ```
 
-The script keeps same-day history and skips already-pushed papers by default.
+Category push is also supported, for example:
+
+```bash
+bash skills/paper-daily-frontier/scripts/today_push.sh --category bubble-marangoni-electrolysis
+```
+
+The script keeps same-day history (per category) and skips already-pushed papers by default.
 Then return `reports/daily-report-YYYY-MM-DD.md` as the English daily digest output (single-paper mode by default).
 
 ## Quality bar
@@ -93,6 +99,7 @@ Never claim a restart solved the issue unless post-restart status confirms recov
 - Source guidance: `references/sources.md`
 - Personalized profile defaults: `references/profile-zhang-pchao.md`
 - Paper anchors: `references/paper-anchors-2026-02.md`
+- PDF category library: `references/pdf-library-zhang-pchao.json`
 - Report template: `references/report-template.md`
 - Gateway health guidance: `references/openclaw-gateway-health.md`
 - Optional formatter script: `scripts/build_daily_digest.py`

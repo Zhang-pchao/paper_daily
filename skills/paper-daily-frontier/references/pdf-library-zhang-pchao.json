@@ -1,0 +1,82 @@
+{
+  "version": "2026-02-28",
+  "categories": [
+    {
+      "id": "edl-oxide-interface",
+      "name": "EDL at Oxide-Electrolyte Interfaces",
+      "keywords": ["electrical double layer", "edl", "oxide-electrolyte", "dplr", "long-range electrostatics", "capacitance", "ihp", "imhp"]
+    },
+    {
+      "id": "proton-transfer-tautomerism",
+      "name": "Proton Transfer & Tautomerism",
+      "keywords": ["proton transfer", "tautomerism", "glycine", "hydronium", "hydroxide", "enhanced sampling", "free energy"]
+    },
+    {
+      "id": "bubble-marangoni-electrolysis",
+      "name": "Bubble Dynamics & Marangoni in Electrolysis",
+      "keywords": ["bubble", "coalescence", "detachment", "solutal marangoni", "thermocapillary", "hydrogen evolution", "electrolysis", "worthington"]
+    },
+    {
+      "id": "ml-potential-gradient-flow",
+      "name": "ML Potentials / Gradient-Flow Methods",
+      "keywords": ["deep potential", "machine learning potential", "neural ode", "wasserstein", "jko", "nonlinear mobility", "gradient flow"]
+    },
+    {
+      "id": "slow-modes-statistical-dynamics",
+      "name": "Slow Modes & Static-to-Dynamics Inference",
+      "keywords": ["slow mode", "dynamical mode", "timescale", "static averages", "mode decomposition"]
+    }
+  ],
+  "papers": [
+    {
+      "title": "Deep JKO: Time-implicit particle methods for general nonlinear gradient flows",
+      "year": 2024,
+      "category": "ml-potential-gradient-flow"
+    },
+    {
+      "title": "Slow dynamical modes from static averages",
+      "year": 2025,
+      "category": "slow-modes-statistical-dynamics"
+    },
+    {
+      "title": "Solutal Marangoni effect determines bubble dynamics during electrocatalytic hydrogen evolution",
+      "year": 2023,
+      "category": "bubble-marangoni-electrolysis"
+    },
+    {
+      "title": "Electrolyte droplet spraying in H2 bubbles during water electrolysis under normal and microgravity conditions",
+      "year": 2025,
+      "category": "bubble-marangoni-electrolysis"
+    },
+    {
+      "title": "Molecular-scale insights into the electrical double layer at oxide-electrolyte interfaces",
+      "year": 2024,
+      "category": "edl-oxide-interface"
+    },
+    {
+      "title": "Double-Layer Distribution of Hydronium and Hydroxide Ions in the Air-Water Interface",
+      "year": 2024,
+      "category": "proton-transfer-tautomerism"
+    },
+    {
+      "title": "Hydroxide and Hydronium Ions Modulate the Dynamic Evolution of Nitrogen Nanobubbles in Water",
+      "year": 2024,
+      "category": "bubble-marangoni-electrolysis"
+    },
+    {
+      "title": "Intramolecular and Water Mediated Tautomerism of Solvated Glycine",
+      "year": 2024,
+      "category": "proton-transfer-tautomerism"
+    },
+    {
+      "title": "Modulation of Electric Field and Interface on Competitive Reaction Mechanisms",
+      "year": 2025,
+      "category": "proton-transfer-tautomerism"
+    },
+    {
+      "title": "Propensity of Water Self-Ions at Air(Oil)-Water Interfaces Revealed by Deep Potential Molecular Dynamics with Enhanced Sampling",
+      "year": 2025,
+      "category": "proton-transfer-tautomerism"
+    }
+  ]
+}
