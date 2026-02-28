@@ -10,29 +10,31 @@ Run this workflow to produce a high-signal English daily paper digest.
 ## Inputs to collect
 
 Collect or confirm:
-- Topic focus (e.g., LLM agents, multimodal reasoning, diffusion models)
+- Topic focus
 - Time window (default: last 24h)
-- Source scope (arXiv, Papers With Code, top venues, Google Scholar)
+- Source scope
 - Output size (default: 5-10 papers)
 - Audience (researcher, engineer, leadership)
 
-If missing, infer conservative defaults and continue.
+If missing, infer defaults from `references/profile-zhang-pchao.md` and continue.
 
 ## Workflow
 
-1. Build search queries from the topic and synonyms.
-2. Gather candidate papers from allowed sources.
-3. Deduplicate by DOI/arXiv ID/title normalization.
-4. Screen papers with relevance + novelty + practical value.
-5. Rank by impact signal (venue quality, novelty claim, methodology strength, reproducibility cues).
-6. Generate concise summaries with:
+1. Load default field profile from `references/profile-zhang-pchao.md`.
+2. Build search queries from profile keywords and topic synonyms.
+3. Gather candidate papers from preferred sources.
+4. Deduplicate by DOI/arXiv ID/title normalization.
+5. Screen papers with relevance + novelty + practical value.
+6. Rank with profile-weighted scoring (method match + chemistry relevance + evidence quality).
+7. Generate concise summaries with:
    - What problem is solved
    - Core method/idea
    - Key results
    - Why it matters
    - Caveats
-7. Produce the final digest using `references/report-template.md`.
-8. If requested, generate a machine-readable dataset (JSON/CSV).
+8. Produce the final digest using `references/report-template.md`.
+9. Append "Top 1-2 papers to deep-read today" with explicit reason.
+10. If requested, generate a machine-readable dataset (JSON/CSV).
 
 ## Quality bar
 
@@ -47,6 +49,9 @@ Enforce:
 - Write in English.
 - Prefer compact, high-information bullet points.
 - Keep each paper summary within 120-180 words unless asked otherwise.
+- Include two scores per paper:
+  - Method Match Score (0-100)
+  - Chemistry Relevance Score (0-100)
 - End with 3-5 trend observations across the selected papers.
 
 ## Reliability operations (optional)
@@ -69,6 +74,7 @@ Never claim a restart solved the issue unless post-restart status confirms recov
 ## Resources
 
 - Source guidance: `references/sources.md`
+- Personalized profile defaults: `references/profile-zhang-pchao.md`
 - Report template: `references/report-template.md`
 - Gateway health guidance: `references/openclaw-gateway-health.md`
 - Optional formatter script: `scripts/build_daily_digest.py`

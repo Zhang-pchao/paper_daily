@@ -13,4 +13,4 @@ Repository for an English-first academic frontier paper workflow skill.
 
 1. Connect real source ingestion (arXiv / PWC / venue feeds).
 2. Add ranking automation and dedup logic.
-3. Package as `.skill` for distribution.
+3. Add scheduled daily run and automatic report delivery.

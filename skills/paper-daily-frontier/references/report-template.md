@@ -14,6 +14,8 @@
 - Source URL:
 - Venue / Status:
 - Published / Submitted:
+- Method Match Score (0-100):
+- Chemistry Relevance Score (0-100):
 - Summary (120-180 words):
 - Key contribution:
 - Evidence snapshot:
@@ -26,6 +28,8 @@
 - Source URL:
 - Venue / Status:
 - Published / Submitted:
+- Method Match Score (0-100):
+- Chemistry Relevance Score (0-100):
 - Summary (120-180 words):
 - Key contribution:
 - Evidence snapshot:
