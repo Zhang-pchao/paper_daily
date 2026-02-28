@@ -43,12 +43,13 @@ If missing, infer defaults from `references/profile-zhang-pchao.md` and continue
 
 ## Command trigger
 
-When user says **"今日推送"**, run:
+When user says **"今日推送"** or **"再来一篇"**, run:
 
 ```bash
 bash skills/paper-daily-frontier/scripts/today_push.sh
 ```
 
+The script keeps same-day history and skips already-pushed papers by default.
 Then return `reports/daily-report-YYYY-MM-DD.md` as the English daily digest output (single-paper mode by default).
 
 ## Quality bar

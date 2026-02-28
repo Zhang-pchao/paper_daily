@@ -345,12 +345,35 @@ def build_report(topic: str, papers: list[dict], date_str: str) -> str:
     return "\n".join(lines)
 
 
+def _state_path(out_dir: Path, date_str: str) -> Path:
+    return out_dir / f"pushed-{date_str}.json"
+
+
+def _load_pushed_urls(out_dir: Path, date_str: str) -> set[str]:
+    p = _state_path(out_dir, date_str)
+    if not p.exists():
+        return set()
+    try:
+        arr = json.loads(p.read_text(encoding="utf-8"))
+        if isinstance(arr, list):
+            return {str(x) for x in arr if x}
+    except Exception:
+        pass
+    return set()
+
+
+def _save_pushed_urls(out_dir: Path, date_str: str, urls: set[str]) -> None:
+    p = _state_path(out_dir, date_str)
+    p.write_text(json.dumps(sorted(urls), ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate today's English frontier-paper report")
     parser.add_argument("--topic", default="Deep Potential MD for interfacial chemistry and proton-transfer mechanisms")
     parser.add_argument("--top-k", type=int, default=1)
     parser.add_argument("--days", type=int, default=3)
     parser.add_argument("--out-dir", default="reports")
+    parser.add_argument("--allow-repeat", action="store_true", help="Allow same-day repeats")
     args = parser.parse_args()
 
     today = dt.datetime.utcnow().date()
@@ -388,13 +411,21 @@ def main() -> None:
         ranked.append(p)
 
     ranked.sort(key=lambda x: x["total_score"], reverse=True)
-    top = ranked[: args.top_k]
 
     date_str = dt.datetime.now().strftime("%Y-%m-%d")
-    report = build_report(args.topic, top, date_str)
-
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    pushed_urls = set() if args.allow_repeat else _load_pushed_urls(out_dir, date_str)
+    filtered = [p for p in ranked if (p.get("url") not in pushed_urls)]
+    top = filtered[: args.top_k]
+
+    if top and not args.allow_repeat:
+        pushed_urls.update(p.get("url", "") for p in top if p.get("url"))
+        _save_pushed_urls(out_dir, date_str, pushed_urls)
+
+    report = build_report(args.topic, top, date_str)
+
     md_path = out_dir / f"daily-report-{date_str}.md"
     json_path = out_dir / f"daily-report-{date_str}.json"
 
@@ -404,6 +435,7 @@ def main() -> None:
     print(f"[OK] Report written: {md_path}")
     print(f"[OK] Data written:   {json_path}")
     print(f"[OK] Candidate pool: {len(papers)}")
+    print(f"[OK] Already pushed today: {len(pushed_urls) - len(top) if (top and not args.allow_repeat) else len(pushed_urls)}")
     print(f"[OK] Selected papers: {len(top)}")
 
 
