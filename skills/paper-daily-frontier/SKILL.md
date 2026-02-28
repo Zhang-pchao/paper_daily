@@ -36,6 +36,16 @@ If missing, infer defaults from `references/profile-zhang-pchao.md` and continue
 9. Append "Top 1-2 papers to deep-read today" with explicit reason.
 10. If requested, generate a machine-readable dataset (JSON/CSV).
 
+## Command trigger
+
+When user says **"今日推送"**, run:
+
+```bash
+bash skills/paper-daily-frontier/scripts/today_push.sh
+```
+
+Then return `reports/daily-report-YYYY-MM-DD.md` as the English daily digest output.
+
 ## Quality bar
 
 Enforce:
@@ -78,4 +88,6 @@ Never claim a restart solved the issue unless post-restart status confirms recov
 - Report template: `references/report-template.md`
 - Gateway health guidance: `references/openclaw-gateway-health.md`
 - Optional formatter script: `scripts/build_daily_digest.py`
+- Auto daily-push script: `scripts/run_today_push.py`
+- Trigger wrapper: `scripts/today_push.sh`
 - Optional gateway checker script: `scripts/check_gateway_health.sh`
