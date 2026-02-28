@@ -64,9 +64,10 @@ Enforce:
 - Prefer compact, high-information bullet points.
 - Omit issue/volume metadata (journal bibliographic details) unless explicitly requested.
 - Keep one clean primary link to the paper.
-- Add one short "Notable author" line when a well-known author is present.
+- Add one short but concrete "Notable author" line with institution + specialty + known method direction (search-based, not generic).
 - If code/data is available, add explicit resource links (GitHub/project/dataset).
-- Keep interpretation concise: background, method, conclusion.
+- If no code/data link is found, omit the entire code/resources section.
+- Keep interpretation concise and method-first: brief background, then focus on method and conclusion.
 
 ## Reliability operations (optional)
 

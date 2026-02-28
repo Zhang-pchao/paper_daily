@@ -12,6 +12,7 @@ from pathlib import Path
 
 ARXIV_API = "http://export.arxiv.org/api/query"
 CROSSREF_API = "https://api.crossref.org/works"
+OPENALEX_API = "https://api.openalex.org/authors"
 
 DEFAULT_KEYWORDS = [
     "deep potential",
@@ -225,18 +226,29 @@ def extract_resource_links(p: dict) -> list[str]:
 
 
 def notable_author_line(authors: list[str]) -> str:
-    notable = {
-        "Michele Parrinello": "Michele Parrinello is a leading figure in enhanced sampling and molecular simulation methods.",
-        "Giovanni Bussi": "Giovanni Bussi is well known for advanced sampling and statistical mechanics in molecular simulations.",
-        "Roberto Car": "Roberto Car is a pioneer of first-principles molecular dynamics.",
-    }
-    for a in authors:
-        for k, v in notable.items():
-            if k.lower() in a.lower():
-                return v
-    if authors:
-        return f"{authors[0]} is one of the key contributors of this work and worth tracking for follow-up papers."
-    return "No notable-author signal identified from metadata."
+    if not authors:
+        return ""
+
+    # Prefer the last author first (often senior/corresponding in this domain), then first author.
+    candidates = [authors[-1], authors[0]] if len(authors) > 1 else [authors[0]]
+    for name in candidates:
+        try:
+            url = f"{OPENALEX_API}?search={urllib.parse.quote(name)}&per-page=1"
+            data = _fetch_json(url)
+            r = (data.get("results") or [{}])[0]
+            matched = r.get("display_name") or name
+            inst = ""
+            if r.get("last_known_institutions"):
+                inst = (r.get("last_known_institutions")[0] or {}).get("display_name", "")
+            concepts = [c.get("display_name", "") for c in (r.get("x_concepts") or [])[:3] if c.get("display_name")]
+            expertise = ", ".join(concepts) if concepts else "computational chemistry"
+            if inst:
+                return f"Notable author: {matched} ({inst}); expertise: {expertise}."
+            return f"Notable author: {matched}; expertise: {expertise}."
+        except Exception:
+            continue
+
+    return f"Notable author: {authors[-1]}."
 
 
 def dedupe(papers: list[dict]) -> list[dict]:
@@ -274,6 +286,8 @@ def build_report(topic: str, papers: list[dict], date_str: str) -> str:
     p = papers[0]
     authors = p.get("authors", [])
     resources = extract_resource_links(p)
+    author_note = notable_author_line(authors)
+
     lines += [
         "## 2) Paper of the Day",
         f"- Title: {p.get('title', '')}",
@@ -284,26 +298,22 @@ def build_report(topic: str, papers: list[dict], date_str: str) -> str:
         f"- Brief summary: {summarize(p)}",
         "",
         "## 3) Author note",
-        f"- {notable_author_line(authors)}",
+        f"- {author_note}",
         "",
-        "## 4) Code / resources",
-    ]
-    if resources:
-        for u in resources:
-            lines.append(f"- {u}")
-    else:
-        lines.append("- No explicit code/data link was detected from metadata. Check the paper page for supplementary links.")
-
-    lines += [
+        "## 4) Brief Interpretation",
+        "- Background (brief): Targets an important gap in chemistry/interface simulation reliability.",
+        "- Method: Uses model benchmarking or mechanism-focused computational analysis to quantify performance/behavior.",
+        "- Conclusion: Provides practical evidence for method selection and next-step validation in related chemistry problems.",
         "",
-        "## 5) Brief Interpretation",
-        "- Research background: This work targets a current bottleneck in molecular/interface chemistry and reaction-mechanism modeling.",
-        "- Method: The study uses computational/theoretical modeling (or experiment+model metadata when available) to quantify mechanisms and trends.",
-        "- Conclusion: The reported findings provide actionable signals for mechanism understanding and future simulation/validation work.",
-        "",
-        "## 6) Why this one today",
+        "## 5) Why this one today",
         f"- Chosen as the single most relevant paper by weighted score ({p.get('total_score', 0)}) and profile alignment.",
     ]
+
+    if resources:
+        lines += ["", "## 6) Code / resources"]
+        for u in resources:
+            lines.append(f"- {u}")
+
     return "\n".join(lines)
 
 

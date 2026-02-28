@@ -59,5 +59,5 @@ Use total score (0-100):
 - Daily shortlist size: 1 paper (only the most relevant one)
 - Include a brief interpretation: background, method, and conclusion
 - Use only essential metadata: title + paper link (no issue/volume by default)
-- Add one-line notable-author context when possible
-- Add code/resource links when available
+- Add one-line notable-author context with institution + expertise + known method direction
+- Add code/resource links only when available; otherwise omit this block
