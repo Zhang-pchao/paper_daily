@@ -3,9 +3,10 @@
 ## Priority source mix
 
 1. arXiv (recent submissions in relevant categories)
-2. Papers With Code (new papers + benchmarks)
-3. Conference proceedings (NeurIPS, ICML, ICLR, ACL, CVPR, ECCV/ICCV, KDD)
-4. Google Scholar (for citation and related-work expansion)
+2. ChemRxiv (chemistry preprints)
+3. Journal TOC / metadata streams (JCTC, JCIM, JACS, PRL, PNAS, Cell, Nature, Science)
+4. Papers With Code (new papers + benchmarks)
+5. Google Scholar (for citation and related-work expansion)
 
 ## Suggested query pattern
 
