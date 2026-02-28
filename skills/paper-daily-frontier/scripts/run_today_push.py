@@ -24,9 +24,16 @@ DEFAULT_KEYWORDS = [
     "tautomerism",
     "hydronium",
     "hydroxide",
-    "air-water interface",
-    "oil-water interface",
-    "electric field",
+    "electrical double layer",
+    "oxide-electrolyte",
+    "long-range electrostatics",
+    "wasserstein gradient flow",
+    "neural ode",
+    "nonlinear mobility",
+    "solutal marangoni",
+    "bubble coalescence",
+    "bubble detachment",
+    "hydrogen evolution",
     "electrolyte interface",
 ]
 
@@ -189,20 +196,41 @@ def fetch_chemrxiv(days: int = 5, rows: int = 50) -> list[dict]:
 
 def score_paper(p: dict, keywords: list[str]) -> tuple[int, int, int]:
     text = (p.get("title", "") + " " + p.get("summary", "")).lower()
-    method_kw = ["deep potential", "neural network potential", "machine learning potential", "enhanced sampling", "free energy"]
-    chem_kw = ["proton transfer", "tautomerism", "hydronium", "hydroxide", "interface", "air-water", "oil-water", "electric field", "electrolyte"]
+    method_kw = ["deep potential", "neural network potential", "machine learning potential", "enhanced sampling", "free energy", "neural ode", "wasserstein", "gradient flow", "nonlinear mobility"]
+    chem_kw = ["proton transfer", "tautomerism", "hydronium", "hydroxide", "electrical double layer", "edl", "oxide-electrolyte", "marangoni", "bubble", "electrolysis", "hydrogen evolution", "interface", "electrolyte"]
+
+    anchor_groups = [
+        ["jko", "wasserstein", "neural ode", "nonlinear mobility"],
+        ["slow mode", "dynamical mode", "timescale"],
+        ["solutal marangoni", "hofmeister", "bubble detachment"],
+        ["worthington", "droplet spraying", "microbubble coalescence"],
+        ["electrical double layer", "ihp", "imhp", "dplr", "long-range electrostatics"],
+    ]
 
     method = sum(1 for k in method_kw if k in text)
     chem = sum(1 for k in chem_kw if k in text)
-    evidence = 1 if any(k in text for k in ["benchmark", "accuracy", "simulation", "experiment", "free energy"]) else 0
+    evidence = 1 if any(k in text for k in ["benchmark", "accuracy", "simulation", "experiment", "free energy", "validated"]) else 0
     novelty = 1 if any(k in text for k in ["new", "novel", "first", "unprecedented"]) else 0
     repro = 1 if any(k in text for k in ["code", "github", "open source", "dataset"]) else 0
 
-    method_score = min(100, method * 20)
-    chem_score = min(100, chem * 14)
+    matched_anchors = sum(1 for g in anchor_groups if any(k in text for k in g))
+
+    method_score = min(100, method * 12)
+    chem_score = min(100, chem * 9)
     total = int(0.35 * chem_score + 0.30 * method_score + 20 * evidence + 10 * novelty + 5 * repro)
+
+    if matched_anchors >= 2:
+        total += 18
+    elif matched_anchors == 1:
+        total += 10
+
+    if any(k in text for k in ["electrochemical", "electrolyte", "interface"]) and any(k in text for k in ["neural ode", "ml potential", "deep potential", "gradient flow"]):
+        total += 25
+
     if not any(k in text for k in keywords):
-        total = int(total * 0.5)
+        total = int(total * 0.6)
+
+    total = min(100, total)
     return total, method_score, chem_score
 
 

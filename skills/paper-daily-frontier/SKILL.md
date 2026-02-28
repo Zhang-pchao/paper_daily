@@ -21,7 +21,8 @@ If missing, infer defaults from `references/profile-zhang-pchao.md` and continue
 ## Workflow
 
 1. Load default field profile from `references/profile-zhang-pchao.md`.
-2. Build search queries from profile keywords and topic synonyms.
+2. Load anchor papers from `references/paper-anchors-2026-02.md` and apply anchor-aware relevance boost.
+3. Build search queries from profile keywords and topic synonyms.
 3. Gather candidate papers from preferred sources.
 4. Deduplicate by DOI/arXiv ID/title normalization.
 5. Screen papers with relevance + novelty + practical value.
@@ -90,6 +91,7 @@ Never claim a restart solved the issue unless post-restart status confirms recov
 
 - Source guidance: `references/sources.md`
 - Personalized profile defaults: `references/profile-zhang-pchao.md`
+- Paper anchors: `references/paper-anchors-2026-02.md`
 - Report template: `references/report-template.md`
 - Gateway health guidance: `references/openclaw-gateway-health.md`
 - Optional formatter script: `scripts/build_daily_digest.py`
