@@ -76,6 +76,29 @@ JOURNAL_TITLES = [
     "Proceedings of the National Academy of Sciences",
 ]
 
+VENUE_PRIORITY_BONUS = {
+    "nature": 12,
+    "science": 12,
+    "cell": 10,
+    "jacs": 10,
+    "pnas": 8,
+    "nature chemistry": 11,
+    "nature communications": 9,
+    "nature physics": 8,
+    "nature computational science": 9,
+    "nature catalysis": 10,
+    "nature energy": 10,
+    "joule": 8,
+    "energy & environmental science": 9,
+    "physical review letters": 8,
+    "prl": 8,
+    "jctc": 7,
+    "jcim": 7,
+    "jpcl": 7,
+    "chemical science": 7,
+    "angewandte": 8,
+}
+
 
 def _fetch_json(url: str, timeout: int = 20) -> dict:
     req = urllib.request.Request(url, headers={"User-Agent": "paper-daily-bot/1.0"})
@@ -305,6 +328,13 @@ def score_paper(p: dict, keywords: list[str], category_keywords: list[str] | Non
 
     if any(k in text for k in ["electrochemical", "electrolyte", "interface"]) and any(k in text for k in ["neural ode", "ml potential", "deep potential", "gradient flow"]):
         total += 25
+
+    venue_text = f"{p.get('venue', '')} {p.get('source', '')}".lower()
+    venue_bonus = 0
+    for k, b in VENUE_PRIORITY_BONUS.items():
+        if k in venue_text:
+            venue_bonus = max(venue_bonus, b)
+    total += venue_bonus
 
     if not any(k in text for k in keywords):
         total = int(total * 0.6)

@@ -58,6 +58,11 @@ Use total score (0-100):
 - 10% novelty signal
 - 5% reproducibility signal
 
+Venue-priority bonus (same relevance情况下优先高影响期刊):
+- Tier S: Nature / Science / Cell / JACS (+10~12)
+- Tier A: Nature Chemistry / Nature Communications / Nature Catalysis / Nature Energy / PNAS / PRL (+8~11)
+- Tier B: JCTC / JCIM / JPCL / Joule / EES / Chemical Science / Angewandte (+7~9)
+
 Anchor-aware bonus (from `references/paper-anchors-2026-02.md`):
 - +10 if strong overlap with one anchor
 - +18 if overlap with two or more anchors
