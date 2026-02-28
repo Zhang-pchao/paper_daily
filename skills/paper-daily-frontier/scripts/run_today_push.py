@@ -39,7 +39,7 @@ DEFAULT_KEYWORDS = [
 
 CATEGORY_QUERY = "(cat:physics.chem-ph OR cat:cond-mat.soft OR cat:physics.bio-ph OR cat:physics.comp-ph)"
 
-# User requested: JCTC/JCIM/JACS/PRL/PNAS/CNS (Cell/Nature/Science)
+# User requested expanded top-journal coverage.
 JOURNALS = {
     "JCTC": "1549-9626",
     "JCIM": "1549-960X",
@@ -49,7 +49,32 @@ JOURNALS = {
     "Nature": "1476-4687",
     "Science": "1095-9203",
     "Cell": "0092-8674",
+    "Nature Communications": "2041-1723",
+    "Nature Chemistry": "1755-4349",
+    "Nature Physics": "1745-2473",
 }
+
+JOURNAL_TITLES = [
+    "Nature Communications",
+    "Nature Chemistry",
+    "Nature Physics",
+    "Nature Computational Science",
+    "Nature Materials",
+    "Nature Catalysis",
+    "Nature Energy",
+    "Nature Reviews Chemistry",
+    "Science",
+    "Science Advances",
+    "Science Translational Medicine",
+    "Joule",
+    "Energy & Environmental Science",
+    "ACS Energy Letters",
+    "Angewandte Chemie International Edition",
+    "Chemical Science",
+    "Journal of Physical Chemistry Letters",
+    "Physical Review Letters",
+    "Proceedings of the National Academy of Sciences",
+]
 
 
 def _fetch_json(url: str, timeout: int = 20) -> dict:
@@ -192,6 +217,60 @@ def fetch_chemrxiv(days: int = 5, rows: int = 50) -> list[dict]:
             }
         )
     return entries
+
+
+def fetch_crossref_by_titles(days: int = 3, rows: int = 20) -> list[dict]:
+    since = (dt.date.today() - dt.timedelta(days=days)).isoformat()
+    all_entries: list[dict] = []
+    for title_name in JOURNAL_TITLES:
+        params = {
+            "filter": f"from-pub-date:{since}",
+            "query.container-title": title_name,
+            "sort": "published",
+            "order": "desc",
+            "rows": str(rows),
+            "select": "title,URL,DOI,author,published-print,published-online,published,container-title,abstract,type",
+        }
+        url = f"{CROSSREF_API}?{urllib.parse.urlencode(params)}"
+        try:
+            data = _fetch_json(url)
+        except Exception:
+            continue
+
+        for it in data.get("message", {}).get("items", []):
+            ct = " ".join(it.get("container-title", [])) if isinstance(it.get("container-title"), list) else ""
+            if title_name.lower() not in ct.lower():
+                continue
+            title = ""
+            if isinstance(it.get("title"), list) and it["title"]:
+                title = it["title"][0]
+            abstract = re.sub(r"<[^>]+>", " ", (it.get("abstract") or ""))
+            summary = re.sub(r"\s+", " ", abstract).strip()
+            authors = []
+            for a in it.get("author", [])[:12]:
+                name = " ".join(x for x in [a.get("given", ""), a.get("family", "")] if x).strip()
+                if name:
+                    authors.append(name)
+            pdate = ""
+            for k in ["published-online", "published-print", "published"]:
+                date_parts = it.get(k, {}).get("date-parts", [])
+                if date_parts and date_parts[0]:
+                    ymd = date_parts[0] + [1, 1]
+                    pdate = f"{ymd[0]:04d}-{ymd[1]:02d}-{ymd[2]:02d}"
+                    break
+
+            all_entries.append(
+                {
+                    "title": re.sub(r"\s+", " ", title).strip(),
+                    "summary": summary,
+                    "published": pdate,
+                    "url": it.get("URL", ""),
+                    "authors": authors,
+                    "source": "Crossref",
+                    "venue": title_name,
+                }
+            )
+    return all_entries
 
 
 def score_paper(p: dict, keywords: list[str], category_keywords: list[str] | None = None) -> tuple[int, int, int]:
@@ -445,6 +524,10 @@ def main() -> None:
         pass
     try:
         papers.extend(fetch_crossref_by_issn(days=args.days + 2, rows=35))
+    except Exception:
+        pass
+    try:
+        papers.extend(fetch_crossref_by_titles(days=args.days + 2, rows=20))
     except Exception:
         pass
 

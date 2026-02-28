@@ -14,7 +14,9 @@
 
 Tier A (must-have):
 - ChemRxiv
-- Journal TOC: JCTC, JCIM, JACS, Langmuir, Nature Chemistry, Nature Communications, PRL, PNAS
+- Journal TOC: JCTC, JCIM, JACS, Langmuir, PRL, PNAS, Nature, Science
+- Nature-family expansion: Nature Communications, Nature Chemistry, Nature Physics, Nature Computational Science, Nature Materials, Nature Catalysis, Nature Energy
+- Other high-impact expansion: Science Advances, Joule, Energy & Environmental Science, ACS Energy Letters, Angewandte, Chemical Science, JPCL
 
 Tier B (method expansion):
 - arXiv: physics.chem-ph, cond-mat.soft, physics.bio-ph, physics.comp-ph

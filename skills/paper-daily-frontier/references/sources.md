@@ -4,7 +4,7 @@
 
 1. arXiv (recent submissions in chem-ph / soft-matter / comp-physics / bio-physics)
 2. ChemRxiv (chemistry preprints)
-3. Journal TOC / metadata streams (JCTC, JCIM, JACS, PRL, PNAS, Cell, Nature, Science, Nature Chemistry, Nature Communications)
+3. Journal TOC / metadata streams (JCTC, JCIM, JACS, PRL, PNAS, Cell, Nature, Science, Nature Communications, Nature Chemistry, Nature Physics, Nature Computational Science, Science Advances, Joule, EES, JPCL, ACS Energy Letters, Angewandte, Chemical Science)
 4. Google Scholar (citation tracking and related expansion)
 
 ## Suggested query pattern
