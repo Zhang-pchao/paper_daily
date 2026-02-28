@@ -367,6 +367,22 @@ def _load_category_keywords(category: str, library_path: Path) -> list[str]:
     return []
 
 
+def _category_domain_guard(category: str, text: str) -> bool:
+    """Hard guardrails for category purity."""
+    t = text.lower()
+    if category == "slow-modes-statistical-dynamics":
+        keep_any = [
+            "chem", "electrochem", "electrolyte", "interface", "fluid", "hydrodynamic", "transport", "marangoni", "reaction", "diffusion"
+        ]
+        drop_any = [
+            "galaxy", "agn", "astroph", "cosmolog", "black hole", "stellar", "planet", "quasar"
+        ]
+        if any(x in t for x in drop_any):
+            return False
+        return any(x in t for x in keep_any)
+    return True
+
+
 def _state_path(out_dir: Path, date_str: str, category: str = "all") -> Path:
     suffix = "" if category in ("all", "auto", "") else f"-{category}"
     return out_dir / f"pushed-{date_str}{suffix}.json"
@@ -430,6 +446,8 @@ def main() -> None:
         if d < cutoff:
             continue
         text = (p.get("title", "") + " " + p.get("summary", "")).lower()
+        if not _category_domain_guard(args.category, text):
+            continue
         if category_keywords and not any(k.lower() in text for k in category_keywords):
             continue
         total, method_score, chem_score = score_paper(p, DEFAULT_KEYWORDS, category_keywords)

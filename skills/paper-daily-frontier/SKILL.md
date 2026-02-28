@@ -56,6 +56,7 @@ bash skills/paper-daily-frontier/scripts/today_push.sh --category bubble-marango
 ```
 
 The script keeps same-day history (per category) and skips already-pushed papers by default.
+For `slow-modes-statistical-dynamics`, enforce domain guardrails: keep chemistry/electrochemistry/fluid-dynamics papers and reject astronomy/cosmology content.
 Then return `reports/daily-report-YYYY-MM-DD.md` as the English daily digest output (single-paper mode by default).
 
 ## Quality bar

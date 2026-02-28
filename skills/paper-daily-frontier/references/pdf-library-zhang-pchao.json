@@ -23,8 +23,8 @@
     },
     {
       "id": "slow-modes-statistical-dynamics",
-      "name": "Slow Modes & Static-to-Dynamics Inference",
-      "keywords": ["slow mode", "dynamical mode", "timescale", "static averages", "mode decomposition"]
+      "name": "Slow Modes & Static-to-Dynamics Inference (Chem/Electrochem/Fluids only)",
+      "keywords": ["slow mode", "dynamical mode", "timescale", "static averages", "mode decomposition", "electrochemical", "electrolyte", "interface", "fluid", "hydrodynamics", "transport"]
     }
   ],
   "papers": [
